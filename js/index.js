@@ -15,24 +15,33 @@ function preload() {
 	game.load.spritesheet('explosion', 'img/explode.png', 128, 128);
 	game.load.audio('coinSound', 'sounds/coin.wav');
 	game.load.audio('environment', 'sounds/ambientmain.ogg');
+	// game.load.audio('step', 'sounds/step2.ogg');
 
 
 }
 
-let player;
-let playerWay = false;	//false == right, true == left
-let playerLife = 10;
-let weapon;
-let fireButton;
+let Player;  //class for player
+let dude;
+
+// let weapon;
+// let fireButton;
+
 let Zombies; //class for zombie
 let zombie;
+
 let platforms;
+
 let cursors;
+
 let Coins;  //class for coins
 let coin;
+
 let environment;
+
 let score = 0;
 let scoreText;
+
+
 
 function create() {
 	game.add.tileSprite(0, 0, 10000, 600, 'sky');
@@ -70,28 +79,137 @@ function create() {
 
 
 //PLAYER SETTING----------------------------------------------------------------------------------------------------------------------------------
-	player = game.add.sprite(15, game.world.height - 200, 'dude');
-	player.scale.setTo(0.15, 0.15);
+	Player = function (game, x, y) {
+		Phaser.Sprite.call(this, game, x, y, 'dude');
+		game.physics.enable(this, Phaser.Physics.ARCADE);
+		game.camera.follow(this);
 
-	game.physics.arcade.enable(player);
-	game.camera.follow(player);
+		this.collideWorldBounds = true;
+	    this.enableBody = true;
+		this.animations.add('runLeft', Phaser.Animation.generateFrameNames('runL_', 1, 8), 10, true);
+		this.animations.add('runRight', Phaser.Animation.generateFrameNames('runR_', 1, 8), 10, true);
+		this.animations.add('idleRight', Phaser.Animation.generateFrameNames('idleR_', 1, 10), 15, true);
+		this.animations.add('idleLeft', Phaser.Animation.generateFrameNames('idleL_', 1, 10), 15, true);
+		this.animations.add('jumpRight', Phaser.Animation.generateFrameNames('jumpR_', 1, 10), 5, true);
+		this.animations.add('jumpLeft', Phaser.Animation.generateFrameNames('jumpL_', 1, 10), 5, true);
+		this.animations.add('meleeRight', Phaser.Animation.generateFrameNames('meleeR_', 1, 7), 5, true);
+		this.animations.add('meleeLeft', Phaser.Animation.generateFrameNames('meleeL_', 1, 7), 5, true);
+		this.animations.add('shootRight', Phaser.Animation.generateFrameNames('shootR_', 1, 3), 5, true);
+		this.animations.add('shootLeft', Phaser.Animation.generateFrameNames('shootL_', 1, 3), 5, true);
+		this.animations.add('deadRight', Phaser.Animation.generateFrameNames('deadR_', 1, 10), 5, true);
+		this.animations.add('deadLeft', Phaser.Animation.generateFrameNames('deadL_', 1, 10), 5, true);
+
+		this.body.gravity.y = 300;
+	    this.body.collideWorldBounds = true;
+
+	    this.scale.setTo(0.15, 0.15);
+	    this.hitPlatform;
+	    this.playerWay = false; //false == right, true == left
+		this.playerLife = 500;
+
+		this.weapon = game.add.weapon(30, 'bullet');
+	    this.weapon.bulletKillType = Phaser.Weapon.KILL_CAMERA_BOUNDS;
+	    this.weapon.bulletSpeed = 500;
+	    this.weapon.fireRate = 390;
+	    this.weapon.trackSprite(this, 65, 37, true);
+	    this.fireButton = game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
+
+	    this.weapon.bulletHit = function bulletExplosion(bullet) {
+	    	let explosion = game.add.sprite(bullet.x, bullet.y, 'explosion');
+
+	    	// let explosionSound = game.add.audio("explosionSound");
+
+			explosion.anchor.x = 0.5;
+		    explosion.anchor.y = 0.5;
+			explosion.animations.add('explosion');
+			explosion.animations.play('explosion', 25, false, true);
+
+			// explosionSound.play();
+	    }
 
 
-	player.body.gravity.y = 300;
-	player.body.collideWorldBounds = true;
+		// this.stepSound = game.add.audio('step');
 
-	player.animations.add('runLeft', Phaser.Animation.generateFrameNames('runL_', 1, 8), 10, true);
-	player.animations.add('runRight', Phaser.Animation.generateFrameNames('runR_', 1, 8), 10, true);
-	player.animations.add('idleRight', Phaser.Animation.generateFrameNames('idleR_', 1, 10), 15, true);
-	player.animations.add('idleLeft', Phaser.Animation.generateFrameNames('idleL_', 1, 10), 15, true);
-	player.animations.add('jumpRight', Phaser.Animation.generateFrameNames('jumpR_', 1, 10), 5, true);
-	player.animations.add('jumpLeft', Phaser.Animation.generateFrameNames('jumpL_', 1, 10), 5, true);
-	player.animations.add('meleeRight', Phaser.Animation.generateFrameNames('meleeR_', 1, 7), 5, true);
-	player.animations.add('meleeLeft', Phaser.Animation.generateFrameNames('meleeL_', 1, 7), 5, true);
-	player.animations.add('shootRight', Phaser.Animation.generateFrameNames('shootR_', 1, 3), 5, true);
-	player.animations.add('shootLeft', Phaser.Animation.generateFrameNames('shootL_', 1, 3), 5, true);
-	player.animations.add('deadRight', Phaser.Animation.generateFrameNames('deadR_', 1, 10), 5, true);
-	player.animations.add('deadLeft', Phaser.Animation.generateFrameNames('deadL_', 1, 10), 5, true);
+	    game.add.existing(this);
+	};
+
+	Player.prototype = Object.create(Phaser.Sprite.prototype);
+	Player.prototype.constructor = Player;
+
+	Player.prototype.update = function() {
+		this.hitPlatform = game.physics.arcade.collide(this, platforms);
+
+		this.body.velocity.x = 0;
+
+		if (cursors.left.isDown) {
+			this.body.velocity.x = -150;
+			this.playerWay = true;
+
+			if (cursors.up.isDown) {
+				this.animations.play('jumpLeft');
+			} else {
+				this.animations.play('runLeft');
+				// this.stepSound.play();
+			}
+
+		} else if (cursors.right.isDown) {
+			this.body.velocity.x = 150;
+			this.playerWay = false;
+
+			if (cursors.up.isDown) {
+				this.animations.play('jumpRight');
+			} else {
+				this.animations.play('runRight');
+				// this.stepSound.play();
+			}
+
+		} else if (cursors.up.isDown) {
+
+			if (this.playerWay) {
+				this.animations.play('jumpLeft');
+			} else {
+				this.animations.play('jumpRight');
+			}
+
+		} else if (cursors.down.isDown) {
+
+		} else if (this.fireButton.isDown) {
+			if (this.playerWay) {
+				this.animations.play('shootLeft');
+				this.weapon.bulletSpeed = -500;
+				this.weapon.fire();
+			} else {
+				this.animations.play('shootRight');
+				this.weapon.bulletSpeed = 500;
+				this.weapon.fire();
+			}
+
+		} else {
+
+			if (!this.body.touching.down && !this.hitPlatform) {
+
+				if (this.playerWay) {
+					this.animations.play('jumpLeft');
+				} else {
+					this.animations.play('jumpRight');
+				}
+			} else {
+
+				if (this.playerWay) {
+					this.animations.play('idleLeft');
+				} else {
+					this.animations.play('idleRight');
+				}
+			}
+		}
+
+		if (cursors.up.isDown && this.body.touching.down && this.hitPlatform) {
+			this.body.velocity.y = -350;
+		}
+
+	};
+
+	dude = new Player(game, 15, 300);
 
 //ZOMBIES SETTING----------------------------------------------------------------------------------------------------------------------------------
 	Zombies = function (game, x, y) {
@@ -138,19 +256,23 @@ function create() {
 	        }
 	    });
 
-		game.physics.arcade.overlap(this, player, attackZombies, null, this);
+		game.physics.arcade.overlap(this, dude, attackZombies, null, this);
 
 	 	function attackZombies(zombie, player) {
-			console.log(playerLife);
-			playerLife -= 1;
-			console.log(playerLife);
+			console.log(dude.playerLife);
+			dude.playerLife -= 1;
+			console.log(dude.playerLife);
+
+			if (dude.playerLife <= 0) {
+				alert("U r die!!!")
+			}
 		}
 
-		game.physics.arcade.overlap(this, weapon.bullets, bulletHitZombie, null, this);
+		game.physics.arcade.overlap(this, dude.weapon.bullets, bulletHitZombie, null, this);
     
 	    function bulletHitZombie (zombie, bullet) {
 	    	bullet.kill();
-    		weapon.bulletHit(bullet);
+    		dude.weapon.bulletHit(bullet);
 	    	zombie.kill();
 	    }
 	};
@@ -183,42 +305,19 @@ function create() {
 	Coins.prototype.update = function() {
 		this.animations.play('coin', 10, true, false);
 		game.physics.arcade.collide(this, platforms);
-		game.physics.arcade.overlap(this, player, collectCoins, null, this);
+		game.physics.arcade.overlap(this, dude, collectCoins, null, this);
 
 		function collectCoins(coin, player) {
 			this.coinSound.play();
 			coin.kill();
 			score += 1;
-			scoreText.text = 'Score: ' + score + 'rubles';
+			scoreText.text = 'Score: ' + score + ' rubles';
 		}
 	};
 
 	for (var i = 0; i < game.world.width/70; i++) {
 		coin = new Coins(game, i, 0);
 	}
-
-//WEAPON SETTING-----------------------------------------------------------------------------------------------------------------------------------
-
-    weapon = game.add.weapon(30, 'bullet');
-    weapon.bulletKillType = Phaser.Weapon.KILL_CAMERA_BOUNDS;
-    weapon.bulletSpeed = 500;
-    weapon.fireRate = 390;
-    weapon.trackSprite(player, 65, 37, true);
-    fireButton = game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
-
-    weapon.bulletHit = function bulletExplosion(bullet) {
-    	let explosion = game.add.sprite(bullet.x, bullet.y, 'explosion');
-
-    	// let explosionSound = game.add.audio("explosionSound");
-
-		explosion.anchor.x = 0.5;
-	    explosion.anchor.y = 0.5;
-		explosion.animations.add('explosion');
-		explosion.animations.play('explosion', 25, false, true);
-
-		// explosionSound.play();
-    }
-
 
 //TEXT SETTING-----------------------------------------------------------------------------------------------------------------------------------
 	scoreText = game.add.text(16, 16, 'Score: 0 rubles', { fontSize: '32px', fill: '#FFF' });
@@ -232,82 +331,13 @@ function create() {
 }
 
 function update() {
-	let hitPlatform = game.physics.arcade.collide(player, platforms);
-
-	game.physics.arcade.overlap(weapon.bullets, platforms, bulletHitPlatform);
+	game.physics.arcade.overlap(dude.weapon.bullets, platforms, bulletHitPlatform);
 
     function bulletHitPlatform (bullet, platform) {
     	bullet.kill();
-    	weapon.bulletHit(bullet);
+    	dude.weapon.bulletHit(bullet);
     }
 
-	
-	
-	player.body.velocity.x = 0;
-
-	if (cursors.left.isDown) {
-		player.body.velocity.x = -150;
-		playerWay = true;
-
-		if (cursors.up.isDown) {
-			player.animations.play('jumpLeft');
-		} else {
-			player.animations.play('runLeft');
-		}
-
-	} else if (cursors.right.isDown) {
-		player.body.velocity.x = 150;
-		playerWay = false;
-
-		if (cursors.up.isDown) {
-			player.animations.play('jumpRight');
-		} else {
-			player.animations.play('runRight');
-		}
-
-	} else if (cursors.up.isDown) {
-
-		if (playerWay) {
-			player.animations.play('jumpLeft');
-		} else {
-			player.animations.play('jumpRight');
-		}
-
-	} else if (cursors.down.isDown) {
-
-	} else if (fireButton.isDown) {
-		if (playerWay) {
-			player.animations.play('shootLeft');
-			weapon.bulletSpeed = -500;
-			weapon.fire();
-		} else {
-			player.animations.play('shootRight');
-			weapon.bulletSpeed = 500;
-			weapon.fire();
-		}
-
-	} else {
-
-		if (!player.body.touching.down && !hitPlatform) {
-
-			if (playerWay) {
-				player.animations.play('jumpLeft');
-			} else {
-				player.animations.play('jumpRight');
-			}
-		} else {
-
-			if (playerWay) {
-				player.animations.play('idleLeft');
-			} else {
-				player.animations.play('idleRight');
-			}
-		}
-	}
-
-	if (cursors.up.isDown && player.body.touching.down && hitPlatform) {
-		player.body.velocity.y = -350;
-	}
 
 }
 
