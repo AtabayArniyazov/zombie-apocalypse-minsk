@@ -1,19 +1,18 @@
 'use strict';
 
-const game = new Phaser.Game(1200, 660, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+const game = new Phaser.Game(1200, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 // const game = new Phaser.Game(1200, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update, render: render });
+
 
 
 function preload() {
 	game.load.image('sky', 'img/bgMain.png');
-	game.load.image('ground1', 'img/ground1.png');
+	// game.load.image('ground1', 'img/ground1.png');
 	game.load.image('ground2', 'img/ground2.png');
-	game.load.image('ground3', 'img/ground3.png');
+	// game.load.image('ground3', 'img/ground3.png');
 	game.load.image('ground4', 'img/ground4.png');
 	game.load.image('ground5', 'img/ground5.png');
 	game.load.image('ground6', 'img/ground6.png');
-
-	// game.load.image('ironBox', 'img/ironBox.png');
 	game.load.image('ironBox1', 'img/ironBox1.png');
 	game.load.image('ironBox2', 'img/ironBox2.png');
 	game.load.image('ironBox3', 'img/ironBox3.png');
@@ -24,8 +23,10 @@ function preload() {
 	game.load.image('lava', 'img/lava.png');
 	game.load.image('acidLava', 'img/acidLava.png');
 	game.load.image('frozenFlame', 'img/frozenFlame.png');
-
 	game.load.image('bullet', 'img/bullet.png');
+	game.load.image('restartGame', 'img/restart.png');
+	game.load.image('pauseGame', 'img/pause.png');
+	game.load.image('playGame', 'img/play.png');
 
 	game.load.atlas('dude', 'img/dude_sprite.png', 'img/dude_sprite.json');
 	game.load.atlas('zombieFemale', 'img/zombieFemale_sprite.png', 'img/zombieFemale_sprite.json');
@@ -39,6 +40,11 @@ function preload() {
 
 
 }
+
+let Controls; //class for controls
+let pauseGame;
+let playGame;
+let restartGame;
 
 let Player;  //class for player
 let dude;
@@ -59,9 +65,14 @@ let environment;
 
 let score = 0;
 let scoreText;
+let gameOverText;
 
 
 function create() {
+	game.scale.pageAlignHorizontally = true;
+	game.scale.pageAlignVertically = true;
+	// game.scale.refresh();
+
 	game.add.tileSprite(0, 0, 11188, 660, 'sky');
 	game.world.setBounds(0, 0, 11188, 660);
 
@@ -132,39 +143,39 @@ function create() {
 		ground.body.immovable = true;
 
 	
+	let dangerousObstaclesCoordinateY = game.world.height - 33;
+	let acid = dangerousObstacles.create(240, dangerousObstaclesCoordinateY, 'acid');
+		acid.body.immovable = true;
+		acid = dangerousObstacles.create(4320, dangerousObstaclesCoordinateY, 'acid');
+		acid.body.immovable = true;
+		acid = dangerousObstacles.create(4560, dangerousObstaclesCoordinateY, 'acid');
+		acid.body.immovable = true;
+		acid = dangerousObstacles.create(4800, dangerousObstaclesCoordinateY, 'acid');
+		acid.body.immovable = true;
+		acid = dangerousObstacles.create(5040, dangerousObstaclesCoordinateY, 'acid');
+		acid.body.immovable = true;
+		acid = dangerousObstacles.create(8760, dangerousObstaclesCoordinateY, 'acid');
+		acid.body.immovable = true;
 
-	let acid = dangerousObstacles.create(240, platformCoordinateY, 'acid');
-		acid.body.immovable = true;
-		acid = dangerousObstacles.create(4320, platformCoordinateY, 'acid');
-		acid.body.immovable = true;
-		acid = dangerousObstacles.create(4560, platformCoordinateY, 'acid');
-		acid.body.immovable = true;
-		acid = dangerousObstacles.create(4800, platformCoordinateY, 'acid');
-		acid.body.immovable = true;
-		acid = dangerousObstacles.create(5040, platformCoordinateY, 'acid');
-		acid.body.immovable = true;
-		acid = dangerousObstacles.create(8760, platformCoordinateY, 'acid');
-		acid.body.immovable = true;
-
-	let lava = dangerousObstacles.create(1320, platformCoordinateY, 'lava');
+	let lava = dangerousObstacles.create(1320, dangerousObstaclesCoordinateY, 'lava');
 		lava.body.immovable = true;
-		lava = dangerousObstacles.create(1560, platformCoordinateY, 'lava');
+		lava = dangerousObstacles.create(1560, dangerousObstaclesCoordinateY, 'lava');
 		lava.body.immovable = true;
-		lava = dangerousObstacles.create(6300, platformCoordinateY, 'lava');
+		lava = dangerousObstacles.create(6300, dangerousObstaclesCoordinateY, 'lava');
 		lava.body.immovable = true;
 
-	let frozenFlame = dangerousObstacles.create(2460, platformCoordinateY, 'frozenFlame');
+	let frozenFlame = dangerousObstacles.create(2460, dangerousObstaclesCoordinateY, 'frozenFlame');
 		frozenFlame.body.immovable = true;
-		frozenFlame = dangerousObstacles.create(7680, platformCoordinateY, 'frozenFlame');
+		frozenFlame = dangerousObstacles.create(7680, dangerousObstaclesCoordinateY, 'frozenFlame');
 		frozenFlame.body.immovable = true;
 
-	let acidLava = dangerousObstacles.create(3240, platformCoordinateY, 'acidLava');
+	let acidLava = dangerousObstacles.create(3240, dangerousObstaclesCoordinateY, 'acidLava');
 		acidLava.body.immovable = true;
-		acidLava = dangerousObstacles.create(9720, platformCoordinateY, 'acidLava');
+		acidLava = dangerousObstacles.create(9720, dangerousObstaclesCoordinateY, 'acidLava');
 		acidLava.body.immovable = true;
-		acidLava = dangerousObstacles.create(9960, platformCoordinateY, 'acidLava');
+		acidLava = dangerousObstacles.create(9960, dangerousObstaclesCoordinateY, 'acidLava');
 		acidLava.body.immovable = true;
-		acidLava = dangerousObstacles.create(10200, platformCoordinateY, 'acidLava');
+		acidLava = dangerousObstacles.create(10200, dangerousObstaclesCoordinateY, 'acidLava');
 		acidLava.body.immovable = true;
 
 	let ironBox = platforms.create(60, 360, 'ironBox2');
@@ -372,12 +383,37 @@ function create() {
 
 
 
+//CONTROLS SETTING----------------------------------------------------------------------------------------------------------------------------------
+	Controls = function (game, x, y, sprite) {
+		Phaser.Sprite.call(this, game, x, y, sprite);
 
+		this.scale.setTo(0.5, 0.5);
+		this.anchor.x = 1.2;
+		this.anchor.y = -0.2;
+		this.fixedToCamera = true;
+		this.inputEnabled = true;
 
-	function randomInteger(min, max) {
-		return Math.floor(Math.random() * (max - min + 1)) + min;
+		game.add.existing(this);
 	}
 
+	Controls.prototype = Object.create(Phaser.Sprite.prototype);
+	Controls.prototype.constructor = Controls;
+	
+	playGame = new Controls(game, game.width, 0, 'playGame');
+	playGame.events.onInputDown.add(function () {
+		game.paused = false;
+	}, this);
+
+	pauseGame = new Controls(game, game.width - 50, 0, 'pauseGame');
+	pauseGame.events.onInputDown.add(function () {
+		game.paused = true;
+	}, this);
+
+	restartGame = new Controls(game, game.width - 100, 0, 'restartGame');
+	restartGame.events.onInputDown.add(function () {
+		location.reload();
+	}, this);
+	
 
 //PLAYER SETTING----------------------------------------------------------------------------------------------------------------------------------
 	Player = function (game, x, y) {
@@ -407,7 +443,7 @@ function create() {
 	    this.hitPlatform;
 	    this.hitSimpleBox;
 	    this.playerWay = false; //false == right, true == left
-		this.playerLife = 500;
+		this.playerLife = 1;
 
 		this.weapon = game.add.weapon(30, 'bullet');
 	    this.weapon.bulletKillType = Phaser.Weapon.KILL_CAMERA_BOUNDS;
@@ -425,6 +461,23 @@ function create() {
 			explosion.animations.play('explosion', 25, false, true);
 	    }
 
+	    this.gameOver = function gameOver() {
+
+	    	gameOverText = game.add.text(game.width * 0.5, game.height * 0.5, 'game over', { fontSize: '100px', fill: '#FA7E4D' });
+	    	gameOverText.anchor.set(0.5, 0.5);
+	    	gameOverText.fixedToCamera = true;
+
+	    	game.paused = true;
+
+	    	restartGame = new Controls(game, game.width * 0.5, game.height * 0.5, 'restartGame');
+			restartGame.events.onInputDown.add(function () {
+				location.reload();
+			}, this);
+
+			restartGame.anchor.set(0.5, 1.5);
+			restartGame.scale.setTo(2, 2);
+	    }
+
 	    game.add.existing(this);
 	};
 
@@ -432,6 +485,23 @@ function create() {
 	Player.prototype.constructor = Player;
 
 	Player.prototype.update = function() {
+		if (this.playerLife === 0) {
+			this.gameOver();
+		}
+
+		game.physics.arcade.overlap(this.weapon.bullets, simpleBox, bulletHitPlatform, null, this);
+		game.physics.arcade.overlap(this.weapon.bullets, platforms, bulletHitPlatform, null, this);
+		game.physics.arcade.overlap(this, dangerousObstacles, hitDangerousObstacles, null, this);
+
+	    function bulletHitPlatform (bullet, platform) {
+	    	bullet.kill();
+	    	this.weapon.bulletHit(bullet);
+	    }
+
+	    function hitDangerousObstacles (player, dangerousObstacles) {
+	    	this.playerLife = 0;
+	    }
+
 		this.hitPlatform = game.physics.arcade.collide(this, platforms);
 		this.hitSimpleBox = game.physics.arcade.collide(this, simpleBox);
 
@@ -536,6 +606,7 @@ function create() {
 
 	    this.scale.setTo(0.15, 0.15);
 	    game.add.existing(this);
+
 	};
 
 	Zombies.prototype = Object.create(Phaser.Sprite.prototype);
@@ -544,8 +615,7 @@ function create() {
 	Zombies.prototype.update = function() {
 
 		game.physics.arcade.collide(this, platforms, function (zombie, platform) {
-	        if (zombie.body.velocity.x > 0 && zombie.x > platform.x + (platform.width - zombie.width) ||
-	                zombie.body.velocity.x < 0 && zombie.x < platform.x) {
+	        if (zombie.body.velocity.x > 0 && zombie.x > platform.x + (platform.width - zombie.width) || zombie.body.velocity.x < 0 && zombie.x < platform.x) {
 	            zombie.body.velocity.x *= -1; 
 	        }
 
@@ -558,22 +628,22 @@ function create() {
 	        }
 	    });
 
-		game.physics.arcade.overlap(this, dude, attackZombies, null, this);
+		game.physics.arcade.collide(this, dude, attackZombies, null, this);
 
 	 	function attackZombies(zombie, player) {
-			console.log(dude.playerLife);
+
 			if (this.zombieWay) {
-				zombie.animations.play('attackLeft');	
+				zombie.animations.stop();
+				zombie.animations.play('attackLeft');
 			} else {
+				zombie.animations.stop();
 				zombie.animations.play('attackRight');
 			}
 			
-			dude.playerLife -= 1;
-			console.log(dude.playerLife);
-
-			if (dude.playerLife <= 0) {
-				alert("U r die!!!")
+			if (dude.playerLife !== 0) {
+				dude.playerLife -= 1;
 			}
+
 		}
 
 		game.physics.arcade.overlap(this, dude.weapon.bullets, bulletHitZombie, null, this);
@@ -747,6 +817,7 @@ function create() {
 	scoreText.fixedToCamera = true;
 
 
+
 //REMOVE CONTEXTMENU (right click on mouse)------------------------------------------------------------------------------------------------------
 	game.canvas.oncontextmenu = function (event) {
 		event.preventDefault (); 
@@ -755,17 +826,16 @@ function create() {
 }
 
 function update() {
-	game.physics.arcade.overlap(dude.weapon.bullets, platforms, bulletHitPlatform);
 
-    function bulletHitPlatform (bullet, platform) {
-    	bullet.kill();
-    	dude.weapon.bulletHit(bullet);
-    }
 
 
 }
 
 
+
+function randomInteger(min, max) {
+	return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 
 
