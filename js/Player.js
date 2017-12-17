@@ -60,7 +60,7 @@ Player = function (game, x, y) {
 
 	    this.gameOver = function gameOver() {
 
-	    	gameOverText = game.add.text(game.width * 0.5, game.height * 0.5, 'game over', { fontSize: '100px', fill: 'yellow' });
+	    	gameOverText = game.add.text(game.width * 0.5, game.height * 0.5, 'game over\nYour score is ' + score, { fontSize: '100px', fill: 'yellow' });
 	    	gameOverText.anchor.set(0.5, 0.5);
 	    	gameOverText.fixedToCamera = true;
 
@@ -87,8 +87,9 @@ Player = function (game, x, y) {
 		}
 
 		if (this.x > 1700 && this.x < 2600 && this.churchBelling) {
-				this.churchBell.play();
-				this.churchBelling = false;
+			this.churchBell.play();
+			this.churchBelling = false;
+
 			game.time.events.add(Phaser.Timer.SECOND * 3, function () {
 				this.churchBelling = true;
 			}, this);

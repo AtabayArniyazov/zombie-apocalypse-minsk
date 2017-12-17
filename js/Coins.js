@@ -3,12 +3,18 @@
 
 let Coins;  //class for coins
 
-Coins = function createCoins(game, x, y) {
-		Phaser.Sprite.call(this, game, x, y, 'coin');
+Coins = function createCoins(game, x, y, sprite, type) {
+		Phaser.Sprite.call(this, game, x, y, sprite);
 		game.physics.enable(this, Phaser.Physics.ARCADE);
 		this.collideWorldBounds = true;
 	    this.enableBody = true;
-	    this.animations.add('coin');
+
+	    this.game = game;
+	    this.coordinateX = x;
+	    this.coordinateY = y;
+	    this.spriteName = sprite;
+	    this.type = type;
+	    this.animations.add(this.spriteName);
 		// this.body.gravity.y = 300;
 		// this.body.bounce.y = 0.7 + Math.random() * 0.2;
 	    this.scale.setTo(0.7, 0.7);
@@ -17,11 +23,10 @@ Coins = function createCoins(game, x, y) {
 		// this.anchor.x = 0.5;
 		// this.anchor.y = 0.5;
 
+		this.type = type;
+
 		this.createCoin = function (array) {
-			this.game = array[0];
-			this.coordinateX = array[1];
-			this.coordinateY = array[2];
-			this.countArray = [array[3], array[4]];
+			this.countArray = [array[5], array[6]];
 			this.coinBoolean = true;
 
 			for (var i = 0; i < this.countArray[0]; i++) {
@@ -36,10 +41,10 @@ Coins = function createCoins(game, x, y) {
 							this.coordinateX += 60;
 						}
 					} else if (this.coinBoolean == true) {
-						belarusianCoin = new Coins(game, this.coordinateX, this.coordinateY);
+						belarusianCoin = new Coins(game, this.coordinateX, this.coordinateY, this.spriteName, this.type);
 						this.coordinateX += 60;
 					} else if (this.coinBoolean == false) {
-						belarusianCoin = new Coins(game, this.coordinateX, this.coordinateY);
+						belarusianCoin = new Coins(game, this.coordinateX, this.coordinateY, this.spriteName, this.type);
 						this.coordinateX -= 60;
 					}
 				}
@@ -54,14 +59,14 @@ Coins = function createCoins(game, x, y) {
 	Coins.prototype.constructor = Coins;
 
 	Coins.prototype.update = function() {
-		this.animations.play('coin', 10, true, false);
+		this.animations.play(this.spriteName, 10, true, false);
 		game.physics.arcade.collide(this, platforms);
 		game.physics.arcade.overlap(this, dude, collectCoins, null, this);
 
 		function collectCoins(coin, player) {
 			this.coinSound.play();
 			coin.kill();
-			score += 1;
-			scoreText.text = 'Score: ' + score + ' rubles';
+			score += this.type;
+			scoreText.text = 'Score: ' + score;
 		}
 	};

@@ -31,7 +31,7 @@ Man.prototype.update = function() {
 
 	function levelComplete (man, girl) {
 
-		let levelCompleteText = game.add.text(game.width * 0.5, game.height * 0.5, 'Level complete!\nYou have ' + score + ' rubles', { fontSize: '100px', fill: 'yellow' });
+		let levelCompleteText = game.add.text(game.width * 0.5, game.height * 0.5, 'Level complete!\nYour score is ' + score, { fontSize: '100px', fill: 'yellow' });
 		levelCompleteText.anchor.set(0.5, 0.5);
 		levelCompleteText.fixedToCamera = true;
 
