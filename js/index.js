@@ -5,6 +5,9 @@ const game = new Phaser.Game(1200, 600, Phaser.AUTO, '', { preload: preload, cre
 
 
 function preload() {
+	game.load.image('loading', 'img/splashScreen.png');
+
+
 	game.load.image('sky', 'img/bgMain.png');
 	// game.load.image('ground1', 'img/ground1.png');
 	game.load.image('ground2', 'img/ground2.png');
@@ -98,6 +101,8 @@ let gameOverText;
 
 
 function create() {
+	game.stage.backgroundColor = '#ffffff';
+
 	game.scale.pageAlignHorizontally = true;
 	game.scale.pageAlignVertically = true;
 
