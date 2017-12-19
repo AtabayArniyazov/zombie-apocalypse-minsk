@@ -1,17 +1,13 @@
 'use strict';
 
-const game = new Phaser.Game(1200, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+const game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 // const game = new Phaser.Game(1200, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update, render: render });
 
 
 function preload() {
 	game.load.image('loading', 'img/splashScreen.png');
-
-
 	game.load.image('sky', 'img/bgMain.png');
-	// game.load.image('ground1', 'img/ground1.png');
 	game.load.image('ground2', 'img/ground2.png');
-	// game.load.image('ground3', 'img/ground3.png');
 	game.load.image('ground4', 'img/ground4.png');
 	game.load.image('ground5', 'img/ground5.png');
 	game.load.image('ground6', 'img/ground6.png');
@@ -26,17 +22,17 @@ function preload() {
 	game.load.image('acidLava', 'img/acidLava.png');
 	game.load.image('frozenFlame', 'img/frozenFlame.png');
 	game.load.image('bullet', 'img/bullet.png');
+	game.load.image('menuButton', 'img/menuButton.png');
 	game.load.image('restartGame', 'img/restart.png');
 	game.load.image('pauseGame', 'img/pause.png');
 	game.load.image('playGame', 'img/play.png');
 	game.load.image('music', 'img/music.png');
 	game.load.image('sound', 'img/sound.png');
-
+	game.load.image('scoreBoard', 'img/scoreBoard.png');
+	game.load.image('man', 'img/man.png');
 	game.load.atlas('dude', 'img/dude_sprite.png', 'img/dude_sprite.json');
-	game.load.atlas('man', 'img/man_sprite.png', 'img/man_sprite.json');
 	game.load.atlas('zombieFemale', 'img/zombieFemale_sprite.png', 'img/zombieFemale_sprite.json');
 	game.load.atlas('zombieMale', 'img/zombieMale_sprite.png', 'img/zombieMale_sprite.json');
-
 	game.load.spritesheet('coin1', 'img/belarusianCoin1_sprite.png', 68, 68);
 	game.load.spritesheet('coin2', 'img/belarusianCoin2_sprite.png', 68, 68);
 	game.load.spritesheet('coin050', 'img/belarusianCoin050_sprite.png', 68, 68);
@@ -45,9 +41,7 @@ function preload() {
 	game.load.spritesheet('coin05', 'img/belarusianCoin05_sprite.png', 68, 68);
 	game.load.spritesheet('coin02', 'img/belarusianCoin02_sprite.png', 68, 68);
 	game.load.spritesheet('coin01', 'img/belarusianCoin01_sprite.png', 68, 68);
-
 	game.load.spritesheet('explosion', 'img/explode.png', 128, 128);
-
 	game.load.audio('coinSound', 'sounds/coin.wav');
 	game.load.audio('environment', 'sounds/ambientmain.ogg');
 	game.load.audio('zombieDead1', 'sounds/zombieDead1.wav');
@@ -57,17 +51,18 @@ function preload() {
 	game.load.audio('zombieDead5', 'sounds/zombieDead5.wav');
 	game.load.audio('zombieDead6', 'sounds/zombieDead6.wav');
 	game.load.audio('zombieDead7', 'sounds/zombieDead7.wav');
-
 	game.load.audio('pistol', 'sounds/pistol.wav');
 	game.load.audio('churchBell', 'sounds/churchBell.wav');
 	game.load.audio('rockBreak', 'sounds/rockBreak.wav');
-
-
 }
 
+let menuGroup;
+let menuGroupOpen = false;
+let menuButton;
 let pauseGame;
 let playGame;
 let restartGame;
+let scoreBoard;
 let music;
 let musicPlay = true;
 let sound;
@@ -97,12 +92,13 @@ let environment;
 
 let score = 0;
 let scoreText;
-let gameOverText;
+let gameOverText1;
+let gameOverText2;
+let levelComplete1;
+let levelComplete2;
 
 
 function create() {
-	game.stage.backgroundColor = '#ffffff';
-
 	game.scale.pageAlignHorizontally = true;
 	game.scale.pageAlignVertically = true;
 
@@ -137,22 +133,55 @@ function create() {
 	buildSimpleBox();
 
 //CONTROLS SETTING----------------------------------------------------------------------------------------------------------------------------------
-	playGame = new Controls(game, game.width, 0, 'playGame');
+	menuGroup = game.add.group();
+
+	menuButton = game.add.button(game.width - 25, 25, "menuButton");
+	menuButton.scale.setTo(0.5, 0.5);
+	menuButton.anchor.set(0.5, -0.1);
+
+	menuButton.events.onInputDown.add(function () {
+		if (game.camera.x > 0) {
+			menuGroup.fixedToCamera = !menuGroup.fixedToCamera;	
+		}
+
+		if (!menuGroup.fixedToCamera) {
+			if(menuGroup.y == 0){
+				let menuTween = game.add.tween(menuGroup).to({
+					y: 375     
+				}, 500, Phaser.Easing.Bounce.Out, true);
+			}
+		}
+	}, this);
+
+	menuGroup.add(menuButton);
+
+	playGame = game.add.button(game.width - 25, - 25, "playGame");
+	playGame.anchor.set(0.5);
+	playGame.scale.setTo(0.5, 0.5);
 	playGame.events.onInputDown.add(function () {
 		game.paused = false;
 	}, this);
+	menuGroup.add(playGame);
 
-	pauseGame = new Controls(game, game.width - 50, 0, 'pauseGame');
+	pauseGame = game.add.button(game.width - 25, - 75, "pauseGame");
+	pauseGame.anchor.set(0.5);
+	pauseGame.scale.setTo(0.5, 0.5);
 	pauseGame.events.onInputDown.add(function () {
 		game.paused = true;
 	}, this);
+	menuGroup.add(pauseGame);
 
-	restartGame = new Controls(game, game.width - 100, 0, 'restartGame');
+	restartGame = game.add.button(game.width - 25, - 125, "restartGame");
+	restartGame.anchor.set(0.5);
+	restartGame.scale.setTo(0.5, 0.5);
 	restartGame.events.onInputDown.add(function () {
 		location.reload();
 	}, this);
+	menuGroup.add(restartGame);
 
-	music = new Controls(game, game.width - 150, 0, 'music');
+	music = game.add.button(game.width - 25, - 175, "music");
+	music.anchor.set(0.5);
+	music.scale.setTo(0.5, 0.5);
 	music.events.onInputDown.add(function () {
 		if (musicPlay) {
 			environment.pause();
@@ -162,8 +191,11 @@ function create() {
 			musicPlay = true;
 		}
 	}, this);
-	
-	sound = new Controls(game, game.width - 200, 0, 'sound');
+	menuGroup.add(music);
+
+	sound = game.add.button(game.width - 25, - 225, "sound");
+	sound.anchor.set(0.5);
+	sound.scale.setTo(0.5, 0.5);
 	sound.events.onInputDown.add(function () {
 		if (soundPlay) {
 			game.sound.mute = true;
@@ -174,12 +206,44 @@ function create() {
 		}
 			
 	}, this);
+	menuGroup.add(sound);
+
+	scoreBoard = game.add.button(game.width - 25, - 275, "scoreBoard");
+	scoreBoard.anchor.set(0.5);
+	scoreBoard.scale.setTo(0.5, 0.5);
+	menuGroup.add(scoreBoard);
+
+	
+	
+	
+	// scoreBoard = new Controls(game, game.width - 250, 0, 'scoreBoard');
+	// scoreBoard.events.onInputDown.add(function () {
+	// 	let scoreBoardText = game.add.text(game.width * 0.5, game.height * 0.5, 'Твой скор\n' + score, { fontSize: '100px', fill: 'yellow' });
+	// 	scoreBoardText.anchor.set(0.5, 0.5);
+	// 	scoreBoardText.fixedToCamera = true;
+
+	// 	game.paused = true;
+
+	// 	// restartGame = new Controls(game, game.width * 0.5, game.height * 0.5, 'restartGame');
+	// 	// restartGame.events.onInputDown.add(function () {
+	// 	// 	location.reload();
+	// 	// }, this);
+
+	// 	// restartGame.anchor.set(0.5, 1.7);
+	// 	// restartGame.scale.setTo(2, 2);
+			
+	// }, this);
 	
 //PLAYER SETTING----------------------------------------------------------------------------------------------------------------------------------
-	dude = new Player(game, 20, 500);
+	dude = new Player(game, 10920, 500);
 
 //MAN SETTING----------------------------------------------------------------------------------------------------------------------------------
-	man = new Man(game, 11100, 250);
+	// man = new Man(game, 11100, 250);
+	man = game.add.sprite(11100, 290, 'man');
+	game.physics.enable(man, Phaser.Physics.ARCADE);
+	man.collideWorldBounds = true;
+	man.enableBody = true;
+	man.scale.setTo(0.15, 0.15);
 
 //ZOMBIES SETTING----------------------------------------------------------------------------------------------------------------------------------
 	zombie = new Zombies(game, 60, 250);
@@ -297,6 +361,27 @@ function create() {
 	scoreText = game.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: 'yellow' });
 	scoreText.fixedToCamera = true;
 
+	levelComplete1 = game.add.text(20, 50, 'Level complete!', { font: "85px Arial Black", fill: "#c51b7d" });
+	levelComplete1.stroke = "#de77ae";
+	levelComplete1.strokeThickness = 16;
+	levelComplete1.setShadow(5, 5, "#black", 2, false, true);
+	levelComplete2 = game.add.text(200, 300, "Your score is " + score, { font: "85px Arial Black", fill: "#c51b7d" });
+	levelComplete2.stroke = "#de77ae";
+	levelComplete2.strokeThickness = 16;
+	levelComplete2.setShadow(5, 5, "#black", 2, false, true);
+	game.physics.arcade.enable([ levelComplete1, levelComplete2 ]);
+	levelComplete1.body.velocity.setTo(0, 200);
+	levelComplete1.body.collideWorldBounds = true;
+	levelComplete1.body.bounce.set(1);
+	levelComplete1.alpha = 0;
+	levelComplete1.fixedToCamera = true;
+	levelComplete2.body.velocity.setTo(0, -100);
+	levelComplete2.body.collideWorldBounds = true;
+	levelComplete2.body.bounce.set(1);
+	levelComplete2.alpha = 0;
+	levelComplete2.fixedToCamera = true;
+		
+
 //REMOVE CONTEXTMENU (right click on mouse)------------------------------------------------------------------------------------------------------
 	game.canvas.oncontextmenu = function (event) {
 		event.preventDefault (); 
@@ -305,7 +390,31 @@ function create() {
 }
 
 function update() {
+	if (game.camera.x > 0 && !menuGroupOpen) {
+		menuGroup.fixedToCamera = !menuGroup.fixedToCamera;
+		menuButton.anchor.set(0.5);
+		menuGroupOpen = !menuGroupOpen;
+	}
 
+	game.physics.arcade.collide(levelComplete1, levelComplete2);
+
+	game.physics.arcade.overlap(dude, man, levelComplete, null, this);
+
+	function levelComplete (girl, man) {
+		levelComplete1.fixedToCamera = false;
+		levelComplete2.fixedToCamera = false;
+		levelComplete1.alpha = 1;
+		levelComplete2.alpha = 1;
+		levelComplete2.setText("Your score is " + score);
+
+		restartGame = new Controls(game, game.width * 0.5, game.height * 0.5, 'restartGame');
+		restartGame.events.onInputDown.add(function () {
+			location.reload();
+		}, this);
+
+		restartGame.anchor.set(-1.5, 2.5);
+		restartGame.scale.setTo(1.5, 1.5);
+	}
 
 }
 

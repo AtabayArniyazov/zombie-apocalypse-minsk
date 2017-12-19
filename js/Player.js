@@ -32,6 +32,27 @@ Player = function (game, x, y) {
 	    this.playerWay = false; //false == right, true == left
 		this.playerLife = 10;
 
+		gameOverText1 = game.add.text(20, 50, 'Game over', { font: "85px Arial Black", fill: "#c51b7d" });
+		gameOverText1.stroke = "#de77ae";
+		gameOverText1.strokeThickness = 16;
+		gameOverText1.setShadow(5, 5, "black", 2, false, true);
+		gameOverText2 = game.add.text(200, 300, "Your score is " + score, { font: "85px Arial Black", fill: "#c51b7d" });
+		gameOverText2.stroke = "#de77ae";
+		gameOverText2.strokeThickness = 16;
+		gameOverText2.setShadow(5, 5, "black", 2, false, true);
+		game.physics.arcade.enable([ gameOverText1, gameOverText2 ]);
+		gameOverText1.body.velocity.setTo(0, 200);
+		gameOverText1.body.collideWorldBounds = true;
+		gameOverText1.body.bounce.set(1);
+		gameOverText1.alpha = 0;
+		gameOverText1.fixedToCamera = true;
+		gameOverText2.body.velocity.setTo(0, -100);
+		gameOverText2.body.collideWorldBounds = true;
+		gameOverText2.body.bounce.set(1);
+		gameOverText2.alpha = 0;
+		gameOverText2.fixedToCamera = true;
+
+
 		this.weapon = game.add.weapon(30, 'bullet');
 	    this.weapon.bulletKillType = Phaser.Weapon.KILL_CAMERA_BOUNDS;
 	    this.weapon.bulletSpeed = 500;
@@ -49,6 +70,7 @@ Player = function (game, x, y) {
 	    this.rockBreak = game.add.audio('rockBreak');
 	    this.rockBreaking = true;
 
+
 	    this.weapon.bulletHit = function bulletExplosion(bullet) {
 	    	let explosion = game.add.sprite(bullet.x, bullet.y, 'explosion');
 
@@ -59,20 +81,21 @@ Player = function (game, x, y) {
 	    }
 
 	    this.gameOver = function gameOver() {
+			gameOverText1.fixedToCamera = false;
+			gameOverText2.fixedToCamera = false;
+			gameOverText1.alpha = 1;
+			gameOverText2.alpha = 1;
+			gameOverText2.setText("Your score is " + score);
 
-	    	gameOverText = game.add.text(game.width * 0.5, game.height * 0.5, 'game over\nYour score is ' + score, { fontSize: '100px', fill: 'yellow' });
-	    	gameOverText.anchor.set(0.5, 0.5);
-	    	gameOverText.fixedToCamera = true;
-
-	    	game.paused = true;
+			dude.kill();
 
 	    	restartGame = new Controls(game, game.width * 0.5, game.height * 0.5, 'restartGame');
 			restartGame.events.onInputDown.add(function () {
 				location.reload();
 			}, this);
 
-			restartGame.anchor.set(0.5, 1.5);
-			restartGame.scale.setTo(2, 2);
+			restartGame.anchor.set(0.5, 2.5);
+			restartGame.scale.setTo(1.5, 1.5);
 	    }
 
 	    game.add.existing(this);
@@ -82,6 +105,8 @@ Player = function (game, x, y) {
 	Player.prototype.constructor = Player;
 
 	Player.prototype.update = function() {
+		game.physics.arcade.collide(gameOverText1, gameOverText2);
+
 		if (this.playerLife === 0) {
 			this.gameOver();
 		}
