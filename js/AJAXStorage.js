@@ -6,7 +6,7 @@ function tAJAXStorage() {
 	self.hashStorage = {};
 	// ----------------------------------------------------------------------------------------------------------------------------------------------------
 	$.ajax("http://fe.it-academy.by/AjaxStringStorage2.php",
-		{type: "POST", cache: false, dataType: "json", data: {f: "READ", n: "Arniyazov_Atabay_Test_project"}, success: DataLoadedRead, error: ErrorHandler}
+		{type: "POST", cache: false, dataType: "json", data: {f: "READ", n: "Arniyazov_Atabay_Zombie_Apocalypse_Minsk"}, success: DataLoadedRead, error: ErrorHandler}
 	);
 
 	function DataLoadedRead(data) {			
@@ -15,12 +15,11 @@ function tAJAXStorage() {
 			// ------------------------------------------------------------------
 			console.log("DataLoadedRead - " + data.result);
 			console.log(self.hashStorage);
-
-
+			
 			// ------------------------------------------------------------------
 		} else if (data === " ") {
 			$.ajax("http://fe.it-academy.by/AjaxStringStorage2.php",
-				{type: "POST", cache: false, dataType: "json", data: {f: "INSERT", n: "Arniyazov_Atabay_Test_project", v: JSON.stringify(self.hashStorage)}, success: DataLoadedInsert, error: ErrorHandler}
+				{type: "POST", cache: false, dataType: "json", data: {f: "INSERT", n: "Arniyazov_Atabay_Zombie_Apocalypse_Minsk", v: JSON.stringify(self.hashStorage)}, success: DataLoadedInsert, error: ErrorHandler}
 			);
 
 			function DataLoadedInsert(data) {
@@ -61,7 +60,7 @@ function tAJAXStorage() {
 	self.getKeys = function() {
 		var keys = [];
 		for (var key in self.hashStorage) {
-			keys.push(" " + key);
+			keys.push(key);
 		}
 
 		return keys;
@@ -72,28 +71,28 @@ function tAJAXStorage() {
 		var password = Math.random();
 
 		$.ajax("http://fe.it-academy.by/AjaxStringStorage2.php",
-			{type: "POST", cache: false, dataType: "json", data: {f: "LOCKGET", n: "Arniyazov_Atabay_Test_project", p: password}, success: DataLoadedLockget, error: ErrorHandler}
+			{type: "POST", cache: false, dataType: "json", data: {f: "LOCKGET", n: "Arniyazov_Atabay_Zombie_Apocalypse_Minsk", p: password}, success: DataLoadedLockget, error: ErrorHandler}
 		);
 
 		function DataLoadedLockget(data) {
 			// ------------------------------------------------------------------
-			console.log("DataLoadedLockget - " + data.result);
+			// console.log("DataLoadedLockget - " + data.result);
 			// ------------------------------------------------------------------
 
 			$.ajax("http://fe.it-academy.by/AjaxStringStorage2.php",
-				{type: "POST", cache: false, dataType: "json", data: {f: "UPDATE", n: "Arniyazov_Atabay_Test_project", p: password, v: JSON.stringify(hash)}, success: DataLoadedUpdate, error: ErrorHandler}
+				{type: "POST", cache: false, dataType: "json", data: {f: "UPDATE", n: "Arniyazov_Atabay_Zombie_Apocalypse_Minsk", p: password, v: JSON.stringify(hash)}, success: DataLoadedUpdate, error: ErrorHandler}
 			);
 
 			function DataLoadedUpdate(data) {
 				// ------------------------------------------------------------------
-				console.log("DataLoadedUpdate - " + data.result);
+				// console.log("DataLoadedUpdate - " + data.result);
 				// ------------------------------------------------------------------
 			}
 		}	
 	}
 
 	function ErrorHandler(jqXHR, StatusStr, ErrorStr) {
-		alert(StatusStr + " " + ErrorStr);
+		console.log(StatusStr + " " + ErrorStr);
 	}
 	// -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 }

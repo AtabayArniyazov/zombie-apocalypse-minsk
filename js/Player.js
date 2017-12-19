@@ -81,6 +81,8 @@ Player = function (game, x, y) {
 	    }
 
 	    this.gameOver = function gameOver() {
+			scoreStorage.addValue(playerName, score);
+
 			gameOverText1.fixedToCamera = false;
 			gameOverText2.fixedToCamera = false;
 			gameOverText1.alpha = 1;

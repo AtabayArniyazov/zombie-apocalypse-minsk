@@ -1,7 +1,7 @@
 'use strict';
 
 const game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.AUTO, '', { preload: preload, create: create, update: update });
-// const game = new Phaser.Game(1200, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update, render: render });
+// const game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.AUTO, '', { preload: preload, create: create, update: update, render: render });
 
 
 function preload() {
@@ -90,6 +90,10 @@ let coin01;
 
 let environment;
 
+let playerName;
+let bestScores = [];
+let best10Scores = '';
+let scoreStorage = new tAJAXStorage();
 let score = 0;
 let scoreText;
 let gameOverText1;
@@ -211,31 +215,30 @@ function create() {
 	scoreBoard = game.add.button(game.width - 25, - 275, "scoreBoard");
 	scoreBoard.anchor.set(0.5);
 	scoreBoard.scale.setTo(0.5, 0.5);
+
+	scoreBoard.events.onInputDown.add(function () {
+		for (var key in scoreStorage.hashStorage) {
+			bestScores.push([key, scoreStorage.hashStorage[key]]);
+		}
+
+		bestScores.sort(function (a, b) {
+			return a[1] - b[1];
+		})
+
+		bestScores.reverse();
+
+		let tableForScore = game.add.text(game.camera.view.x + 100, game.camera.view.y + 50, 'Highscore Table', { fontSize: '28px', fill: 'red' });
+		
+		for (var i = 0, k = 24; i < 10; i++, k += 24) {
+			let temporary = i + 1 + ') ' + bestScores[i][0] + ' - ' + bestScores[i][1];
+			best10Scores += game.add.text(game.camera.view.x + 100, game.camera.view.y + 70 + k, temporary, { fontSize: '24px', fill: 'red' });
+		}
+
+	}, this);
 	menuGroup.add(scoreBoard);
-
-	
-	
-	
-	// scoreBoard = new Controls(game, game.width - 250, 0, 'scoreBoard');
-	// scoreBoard.events.onInputDown.add(function () {
-	// 	let scoreBoardText = game.add.text(game.width * 0.5, game.height * 0.5, 'Твой скор\n' + score, { fontSize: '100px', fill: 'yellow' });
-	// 	scoreBoardText.anchor.set(0.5, 0.5);
-	// 	scoreBoardText.fixedToCamera = true;
-
-	// 	game.paused = true;
-
-	// 	// restartGame = new Controls(game, game.width * 0.5, game.height * 0.5, 'restartGame');
-	// 	// restartGame.events.onInputDown.add(function () {
-	// 	// 	location.reload();
-	// 	// }, this);
-
-	// 	// restartGame.anchor.set(0.5, 1.7);
-	// 	// restartGame.scale.setTo(2, 2);
-			
-	// }, this);
 	
 //PLAYER SETTING----------------------------------------------------------------------------------------------------------------------------------
-	dude = new Player(game, 10920, 500);
+	dude = new Player(game, 20, 500);
 
 //MAN SETTING----------------------------------------------------------------------------------------------------------------------------------
 	// man = new Man(game, 11100, 250);
@@ -387,6 +390,9 @@ function create() {
 		event.preventDefault (); 
 	}
 
+//ASK PLAYERS NAME-------------------------------------------------------------------------------------------------------------------------------
+	playerName = prompt('What is your name?', "Borodach");
+
 }
 
 function update() {
@@ -401,6 +407,8 @@ function update() {
 	game.physics.arcade.overlap(dude, man, levelComplete, null, this);
 
 	function levelComplete (girl, man) {
+		scoreStorage.addValue(playerName, score);
+
 		levelComplete1.fixedToCamera = false;
 		levelComplete2.fixedToCamera = false;
 		levelComplete1.alpha = 1;
@@ -422,6 +430,6 @@ function update() {
 // function render() {
 //     game.debug.cameraInfo(game.camera, 32, 32);
 //     game.debug.spriteCoords(dude, 800, 32);
-//     dude.weapon.debug(32, 300);
+//     // dude.weapon.debug(32, 3100);
 // }
 // // -----------------------------
