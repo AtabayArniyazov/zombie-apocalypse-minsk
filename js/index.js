@@ -3,7 +3,6 @@
 const game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 // const game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.AUTO, '', { preload: preload, create: create, update: update, render: render });
 
-
 function preload() {
 	game.load.image('loading', 'img/splashScreen.png');
 	game.load.image('sky', 'img/bgMain.png');
@@ -30,6 +29,7 @@ function preload() {
 	game.load.image('sound', 'img/sound.png');
 	game.load.image('scoreBoard', 'img/scoreBoard.png');
 	game.load.image('man', 'img/man.png');
+	game.load.image('bgForTableScore', 'img/bgForTableScore.png');
 	game.load.atlas('dude', 'img/dude_sprite.png', 'img/dude_sprite.json');
 	game.load.atlas('zombieFemale', 'img/zombieFemale_sprite.png', 'img/zombieFemale_sprite.json');
 	game.load.atlas('zombieMale', 'img/zombieMale_sprite.png', 'img/zombieMale_sprite.json');
@@ -62,7 +62,28 @@ let menuButton;
 let pauseGame;
 let playGame;
 let restartGame;
+
 let scoreBoard;
+let scoreBoardCreate = false;
+let scoreBoardOpen = false;
+let bgForScoreBoard;
+let textScore0;
+let textScore1;
+let textScore2;
+let textScore3;
+let textScore4;
+let textScore5;
+let textScore6;
+let textScore7;
+let textScore8;
+let textScore9;
+let textScore10;
+let textScore11;
+let textScore12;
+let textScore13;
+let textScore14;
+let textScore15;
+
 let music;
 let musicPlay = true;
 let sound;
@@ -92,7 +113,7 @@ let environment;
 
 let playerName;
 let bestScores = [];
-let best10Scores = '';
+let best15Scores = '';
 let scoreStorage = new tAJAXStorage();
 let score = 0;
 let scoreText;
@@ -162,30 +183,37 @@ function create() {
 	playGame = game.add.button(game.width - 25, - 25, "playGame");
 	playGame.anchor.set(0.5);
 	playGame.scale.setTo(0.5, 0.5);
+
 	playGame.events.onInputDown.add(function () {
 		game.paused = false;
 	}, this);
+
 	menuGroup.add(playGame);
 
 	pauseGame = game.add.button(game.width - 25, - 75, "pauseGame");
 	pauseGame.anchor.set(0.5);
 	pauseGame.scale.setTo(0.5, 0.5);
+
 	pauseGame.events.onInputDown.add(function () {
 		game.paused = true;
 	}, this);
+
 	menuGroup.add(pauseGame);
 
 	restartGame = game.add.button(game.width - 25, - 125, "restartGame");
 	restartGame.anchor.set(0.5);
 	restartGame.scale.setTo(0.5, 0.5);
+
 	restartGame.events.onInputDown.add(function () {
 		location.reload();
 	}, this);
+
 	menuGroup.add(restartGame);
 
 	music = game.add.button(game.width - 25, - 175, "music");
 	music.anchor.set(0.5);
 	music.scale.setTo(0.5, 0.5);
+
 	music.events.onInputDown.add(function () {
 		if (musicPlay) {
 			environment.pause();
@@ -195,11 +223,13 @@ function create() {
 			musicPlay = true;
 		}
 	}, this);
+
 	menuGroup.add(music);
 
 	sound = game.add.button(game.width - 25, - 225, "sound");
 	sound.anchor.set(0.5);
 	sound.scale.setTo(0.5, 0.5);
+
 	sound.events.onInputDown.add(function () {
 		if (soundPlay) {
 			game.sound.mute = true;
@@ -210,13 +240,14 @@ function create() {
 		}
 			
 	}, this);
+
 	menuGroup.add(sound);
 
 	scoreBoard = game.add.button(game.width - 25, - 275, "scoreBoard");
 	scoreBoard.anchor.set(0.5);
 	scoreBoard.scale.setTo(0.5, 0.5);
 
-	scoreBoard.events.onInputDown.add(function () {
+	let createScoreMenu = function createScoreMenu() {
 		for (var key in scoreStorage.hashStorage) {
 			bestScores.push([key, scoreStorage.hashStorage[key]]);
 		}
@@ -226,22 +257,101 @@ function create() {
 		})
 
 		bestScores.reverse();
-
-		let tableForScore = game.add.text(game.camera.view.x + 100, game.camera.view.y + 50, 'Highscore Table', { fontSize: '28px', fill: 'red' });
 		
-		for (var i = 0, k = 24; i < 10; i++, k += 24) {
-			let temporary = i + 1 + ') ' + bestScores[i][0] + ' - ' + bestScores[i][1];
-			best10Scores += game.add.text(game.camera.view.x + 100, game.camera.view.y + 70 + k, temporary, { fontSize: '24px', fill: 'red' });
+		bgForScoreBoard = game.add.sprite(game.camera.view.width/2 -200, game.camera.view.height/2 - 250, 'bgForTableScore');
+		bgForScoreBoard.inputEnabled = true;
+		bgForScoreBoard.fixedToCamera = true;
+
+		textScore0 = game.add.text(bgForScoreBoard.x + 60, bgForScoreBoard.y + 10, 'Highscore Table', { fontSize: '32px', fill: 'red' });
+		textScore0.fixedToCamera = true;
+		textScore1 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 50, '1) ' + bestScores[0][0] + ' - ' + bestScores[0][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
+		textScore1.fixedToCamera = true;
+		textScore2 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 74, '2) ' + bestScores[1][0] + ' - ' + bestScores[1][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
+		textScore2.fixedToCamera = true;
+		textScore3 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 98, '3) ' + bestScores[2][0] + ' - ' + bestScores[2][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
+		textScore3.fixedToCamera = true;
+		textScore4 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 122, '4) ' + bestScores[3][0] + ' - ' + bestScores[3][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
+		textScore4.fixedToCamera = true;
+		textScore5 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 146, '5) ' + bestScores[4][0] + ' - ' + bestScores[4][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
+		textScore5.fixedToCamera = true;
+		textScore6 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 170, '6) ' + bestScores[5][0] + ' - ' + bestScores[5][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
+		textScore6.fixedToCamera = true;
+		textScore7 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 194, '7) ' + bestScores[6][0] + ' - ' + bestScores[6][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
+		textScore7.fixedToCamera = true;
+		textScore8 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 218, '8) ' + bestScores[7][0] + ' - ' + bestScores[7][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
+		textScore8.fixedToCamera = true;
+		textScore9 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 242, '9) ' + bestScores[8][0] + ' - ' + bestScores[8][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
+		textScore9.fixedToCamera = true;
+		textScore10 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 266, '10) ' + bestScores[9][0] + ' - ' + bestScores[9][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
+		textScore10.fixedToCamera = true;
+		textScore11 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 290, '11) ' + bestScores[10][0] + ' - ' + bestScores[10][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
+		textScore11.fixedToCamera = true;
+		textScore12 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 314, '12) ' + bestScores[11][0] + ' - ' + bestScores[11][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
+		textScore12.fixedToCamera = true;
+		textScore13 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 338, '13) ' + bestScores[12][0] + ' - ' + bestScores[12][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
+		textScore13.fixedToCamera = true;
+		textScore14 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 362, '14) ' + bestScores[13][0] + ' - ' + bestScores[13][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
+		textScore14.fixedToCamera = true;
+		textScore15 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 382, '15) ' + bestScores[14][0] + ' - ' + bestScores[14][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
+		textScore15.fixedToCamera = true;
+	};
+
+	scoreBoard.events.onInputDown.add(function () {
+		if (!scoreBoardCreate) {
+			createScoreMenu();
+			scoreBoardCreate = true;
 		}
 
+		if (scoreBoardOpen) {
+			bgForScoreBoard.visible = false;
+			textScore0.visible = false;
+			textScore1.visible = false;
+			textScore2.visible = false;
+			textScore3.visible = false;
+			textScore4.visible = false;
+			textScore5.visible = false;
+			textScore6.visible = false;
+			textScore7.visible = false;
+			textScore8.visible = false;
+			textScore9.visible = false;
+			textScore10.visible = false;
+			textScore11.visible = false;
+			textScore12.visible = false;
+			textScore13.visible = false;
+			textScore14.visible = false;
+			textScore15.visible = false;
+			game.paused = false;
+
+		} else {
+			bgForScoreBoard.visible = true;
+			textScore0.visible = true;
+			textScore1.visible = true;
+			textScore2.visible = true;
+			textScore3.visible = true;
+			textScore4.visible = true;
+			textScore5.visible = true;
+			textScore6.visible = true;
+			textScore7.visible = true;
+			textScore8.visible = true;
+			textScore9.visible = true;
+			textScore10.visible = true;
+			textScore11.visible = true;
+			textScore12.visible = true;
+			textScore13.visible = true;
+			textScore14.visible = true;
+			textScore15.visible = true;
+			game.paused = true;
+		}
+
+		scoreBoardOpen = !scoreBoardOpen;
 	}, this);
+
 	menuGroup.add(scoreBoard);
 	
 //PLAYER SETTING----------------------------------------------------------------------------------------------------------------------------------
 	dude = new Player(game, 20, 500);
 
-//MAN SETTING----------------------------------------------------------------------------------------------------------------------------------
-	// man = new Man(game, 11100, 250);
+//MAN SETTING-------------------------------------------------------------------------------------------------------------------------------------
 	man = game.add.sprite(11100, 290, 'man');
 	game.physics.enable(man, Phaser.Physics.ARCADE);
 	man.collideWorldBounds = true;
@@ -383,7 +493,6 @@ function create() {
 	levelComplete2.body.bounce.set(1);
 	levelComplete2.alpha = 0;
 	levelComplete2.fixedToCamera = true;
-		
 
 //REMOVE CONTEXTMENU (right click on mouse)------------------------------------------------------------------------------------------------------
 	game.canvas.oncontextmenu = function (event) {
@@ -394,6 +503,8 @@ function create() {
 	playerName = prompt('What is your name?', "Borodach");
 
 }
+
+
 
 function update() {
 	if (game.camera.x > 0 && !menuGroupOpen) {
@@ -426,10 +537,8 @@ function update() {
 
 }
 
-// // -----------------------------
 // function render() {
 //     game.debug.cameraInfo(game.camera, 32, 32);
 //     game.debug.spriteCoords(dude, 800, 32);
 //     // dude.weapon.debug(32, 3100);
 // }
-// // -----------------------------

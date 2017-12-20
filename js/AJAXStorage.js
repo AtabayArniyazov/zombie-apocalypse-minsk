@@ -4,37 +4,28 @@ function tAJAXStorage() {
 	var self = this;
 
 	self.hashStorage = {};
-	// ----------------------------------------------------------------------------------------------------------------------------------------------------
-	$.ajax("http://fe.it-academy.by/AjaxStringStorage2.php",
+	
+	$.ajax("https://fe.it-academy.by/AjaxStringStorage2.php",
 		{type: "POST", cache: false, dataType: "json", data: {f: "READ", n: "Arniyazov_Atabay_Zombie_Apocalypse_Minsk"}, success: DataLoadedRead, error: ErrorHandler}
 	);
 
 	function DataLoadedRead(data) {			
 		if (data !== " ") {
-			self.hashStorage = JSON.parse(data.result);
-			// ------------------------------------------------------------------
-			console.log("DataLoadedRead - " + data.result);
-			console.log(self.hashStorage);
-			
-			// ------------------------------------------------------------------
+			self.hashStorage = JSON.parse(data.result);			
 		} else if (data === " ") {
-			$.ajax("http://fe.it-academy.by/AjaxStringStorage2.php",
+			$.ajax("https://fe.it-academy.by/AjaxStringStorage2.php",
 				{type: "POST", cache: false, dataType: "json", data: {f: "INSERT", n: "Arniyazov_Atabay_Zombie_Apocalypse_Minsk", v: JSON.stringify(self.hashStorage)}, success: DataLoadedInsert, error: ErrorHandler}
 			);
 
 			function DataLoadedInsert(data) {
-				// ------------------------------------------------------------------
-				console.log("DataLoadedInsert - " + data.result);
-				// ------------------------------------------------------------------
+
 			}				
 		}
 	}
-	// ----------------------------------------------------------------------------------------------------------------------------------------------------
+
 	self.addValue = function(key, value) {
 		self.hashStorage[key] = value;
-		// ------------------------------------
 		addValueOnTheServer(self.hashStorage);
-		// ------------------------------------
 	}
 
 	self.getValue = function(key) {
@@ -48,9 +39,7 @@ function tAJAXStorage() {
 	self.deleteValue = function(key) {
 		if (key in self.hashStorage) {
 			delete self.hashStorage[key];
-			// ------------------------------------
 			addValueOnTheServer(self.hashStorage);
-			// ------------------------------------
 			return true;
 		} else {
 			return false;
@@ -66,27 +55,22 @@ function tAJAXStorage() {
 		return keys;
 	}
 	// -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	// функция которая будет сохранять на сервер изменённый хэш
+	// function that will store the modified hash on the server
 	function addValueOnTheServer(hash) {
 		var password = Math.random();
 
-		$.ajax("http://fe.it-academy.by/AjaxStringStorage2.php",
+		$.ajax("https://fe.it-academy.by/AjaxStringStorage2.php",
 			{type: "POST", cache: false, dataType: "json", data: {f: "LOCKGET", n: "Arniyazov_Atabay_Zombie_Apocalypse_Minsk", p: password}, success: DataLoadedLockget, error: ErrorHandler}
 		);
 
 		function DataLoadedLockget(data) {
-			// ------------------------------------------------------------------
-			// console.log("DataLoadedLockget - " + data.result);
-			// ------------------------------------------------------------------
 
-			$.ajax("http://fe.it-academy.by/AjaxStringStorage2.php",
+			$.ajax("https://fe.it-academy.by/AjaxStringStorage2.php",
 				{type: "POST", cache: false, dataType: "json", data: {f: "UPDATE", n: "Arniyazov_Atabay_Zombie_Apocalypse_Minsk", p: password, v: JSON.stringify(hash)}, success: DataLoadedUpdate, error: ErrorHandler}
 			);
 
 			function DataLoadedUpdate(data) {
-				// ------------------------------------------------------------------
-				// console.log("DataLoadedUpdate - " + data.result);
-				// ------------------------------------------------------------------
+
 			}
 		}	
 	}

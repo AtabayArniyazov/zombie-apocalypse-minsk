@@ -90,6 +90,7 @@ Player = function (game, x, y) {
 			gameOverText2.setText("Your score is " + score);
 
 			dude.kill();
+			this.fireButton = '';
 
 	    	restartGame = new Controls(game, game.width * 0.5, game.height * 0.5, 'restartGame');
 			restartGame.events.onInputDown.add(function () {
