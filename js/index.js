@@ -4,7 +4,14 @@ const game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.AUTO,
 // const game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.AUTO, '', { preload: preload, create: create, update: update, render: render });
 
 function preload() {
-	game.load.image('loading', 'img/splashScreen.png');
+	let key = 'loading'; 
+	let data = new Image();
+	data.src = 'img/progressBarRunner.png';
+	game.cache.addImage(key, 'img/progressBarRunner.png', data);
+	let loadingBar = game.add.image(game.width/2, game.height/2, 'loading');
+	loadingBar.anchor.setTo(0.5, 0.5);
+	game.load.setPreloadSprite(loadingBar, 0);
+
 	game.load.image('sky', 'img/bgMain.png');
 	game.load.image('ground2', 'img/ground2.png');
 	game.load.image('ground4', 'img/ground4.png');
@@ -137,6 +144,12 @@ function create() {
 	game.physics.startSystem(Phaser.Physics.ARCADE);
 	cursors = game.input.keyboard.createCursorKeys();
 
+//LOADING BAR SETTING----------------------------------------------------------------------------------------------------------------------------------
+	// loadingBar = game.add.sprite(game.width/2,game.height/2,"loading");
+	// loadingBar.anchor.setTo(0.5,1);
+	// this.load.setPreloadSprite(loadingBar,0);
+
+
 //PLATFORMS SETTING----------------------------------------------------------------------------------------------------------------------------------
 	platforms = game.add.group();
 	platforms.enableBody = true;
@@ -264,35 +277,35 @@ function create() {
 
 		textScore0 = game.add.text(bgForScoreBoard.x + 60, bgForScoreBoard.y + 10, 'Highscore Table', { fontSize: '32px', fill: 'red' });
 		textScore0.fixedToCamera = true;
-		textScore1 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 50, '1) ' + bestScores[0][0] + ' - ' + bestScores[0][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
+		textScore1 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 60, '1) ' + bestScores[0][0] + ' - ' + bestScores[0][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
 		textScore1.fixedToCamera = true;
-		textScore2 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 74, '2) ' + bestScores[1][0] + ' - ' + bestScores[1][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
+		textScore2 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 88, '2) ' + bestScores[1][0] + ' - ' + bestScores[1][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
 		textScore2.fixedToCamera = true;
-		textScore3 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 98, '3) ' + bestScores[2][0] + ' - ' + bestScores[2][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
+		textScore3 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 116, '3) ' + bestScores[2][0] + ' - ' + bestScores[2][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
 		textScore3.fixedToCamera = true;
-		textScore4 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 122, '4) ' + bestScores[3][0] + ' - ' + bestScores[3][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
+		textScore4 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 144, '4) ' + bestScores[3][0] + ' - ' + bestScores[3][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
 		textScore4.fixedToCamera = true;
-		textScore5 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 146, '5) ' + bestScores[4][0] + ' - ' + bestScores[4][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
+		textScore5 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 172, '5) ' + bestScores[4][0] + ' - ' + bestScores[4][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
 		textScore5.fixedToCamera = true;
-		textScore6 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 170, '6) ' + bestScores[5][0] + ' - ' + bestScores[5][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
+		textScore6 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 200, '6) ' + bestScores[5][0] + ' - ' + bestScores[5][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
 		textScore6.fixedToCamera = true;
-		textScore7 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 194, '7) ' + bestScores[6][0] + ' - ' + bestScores[6][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
+		textScore7 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 228, '7) ' + bestScores[6][0] + ' - ' + bestScores[6][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
 		textScore7.fixedToCamera = true;
-		textScore8 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 218, '8) ' + bestScores[7][0] + ' - ' + bestScores[7][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
+		textScore8 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 256, '8) ' + bestScores[7][0] + ' - ' + bestScores[7][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
 		textScore8.fixedToCamera = true;
-		textScore9 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 242, '9) ' + bestScores[8][0] + ' - ' + bestScores[8][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
+		textScore9 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 284, '9) ' + bestScores[8][0] + ' - ' + bestScores[8][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
 		textScore9.fixedToCamera = true;
-		textScore10 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 266, '10) ' + bestScores[9][0] + ' - ' + bestScores[9][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
+		textScore10 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 312, '10) ' + bestScores[9][0] + ' - ' + bestScores[9][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
 		textScore10.fixedToCamera = true;
-		textScore11 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 290, '11) ' + bestScores[10][0] + ' - ' + bestScores[10][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
+		textScore11 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 340, '11) ' + bestScores[10][0] + ' - ' + bestScores[10][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
 		textScore11.fixedToCamera = true;
-		textScore12 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 314, '12) ' + bestScores[11][0] + ' - ' + bestScores[11][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
+		textScore12 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 368, '12) ' + bestScores[11][0] + ' - ' + bestScores[11][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
 		textScore12.fixedToCamera = true;
-		textScore13 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 338, '13) ' + bestScores[12][0] + ' - ' + bestScores[12][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
+		textScore13 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 396, '13) ' + bestScores[12][0] + ' - ' + bestScores[12][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
 		textScore13.fixedToCamera = true;
-		textScore14 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 362, '14) ' + bestScores[13][0] + ' - ' + bestScores[13][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
+		textScore14 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 424, '14) ' + bestScores[13][0] + ' - ' + bestScores[13][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
 		textScore14.fixedToCamera = true;
-		textScore15 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 382, '15) ' + bestScores[14][0] + ' - ' + bestScores[14][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
+		textScore15 = game.add.text(bgForScoreBoard.x + 30, bgForScoreBoard.y + 452, '15) ' + bestScores[14][0] + ' - ' + bestScores[14][1], { font: "24px Arial", fill: "#ff0044", wordWrap: true, wordWrapWidth: bgForScoreBoard.width, align: "center" });
 		textScore15.fixedToCamera = true;
 	};
 
