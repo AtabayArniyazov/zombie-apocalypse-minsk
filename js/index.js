@@ -1,7 +1,9 @@
 'use strict';
 
-const game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.AUTO, '', { preload: preload, create: create, update: update });
-// const game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.AUTO, '', { preload: preload, create: create, update: update, render: render });
+const gameHeight = window.innerHeight > 660 ? 660 : window.innerHeight;
+
+// const game = new Phaser.Game(window.innerWidth, gameHeight, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+const game = new Phaser.Game(window.innerWidth, gameHeight, Phaser.AUTO, '', { preload: preload, create: create, update: update, render: render });
 
 function preload() {
 	let key = 'loading'; 
@@ -143,11 +145,6 @@ function create() {
 
 	game.physics.startSystem(Phaser.Physics.ARCADE);
 	cursors = game.input.keyboard.createCursorKeys();
-
-//LOADING BAR SETTING----------------------------------------------------------------------------------------------------------------------------------
-	// loadingBar = game.add.sprite(game.width/2,game.height/2,"loading");
-	// loadingBar.anchor.setTo(0.5,1);
-	// this.load.setPreloadSprite(loadingBar,0);
 
 
 //PLATFORMS SETTING----------------------------------------------------------------------------------------------------------------------------------
@@ -550,8 +547,8 @@ function update() {
 
 }
 
-// function render() {
-//     game.debug.cameraInfo(game.camera, 32, 32);
-//     game.debug.spriteCoords(dude, 800, 32);
-//     // dude.weapon.debug(32, 3100);
-// }
+function render() {
+    game.debug.cameraInfo(game.camera, 32, 32);
+    game.debug.spriteCoords(dude, 800, 32);
+    // dude.weapon.debug(32, 3100);
+}
