@@ -1,0 +1,1 @@
+http://slides.com/atabayarniyazov/deck-1
