@@ -2,17 +2,31 @@
 
 const gameHeight = window.innerHeight > 660 ? 660 : window.innerHeight;
 
-// const game = new Phaser.Game(window.innerWidth, gameHeight, Phaser.AUTO, '', { preload: preload, create: create, update: update });
-const game = new Phaser.Game(window.innerWidth, gameHeight, Phaser.AUTO, '', { preload: preload, create: create, update: update, render: render });
+const game = new Phaser.Game(window.innerWidth, gameHeight, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+// const game = new Phaser.Game(window.innerWidth, gameHeight, Phaser.AUTO, '', { preload: preload, create: create, update: update, render: render });
 
 function preload() {
-	let key = 'loading'; 
-	let data = new Image();
-	data.src = 'img/progressBarRunner.png';
-	game.cache.addImage(key, 'img/progressBarRunner.png', data);
-	let loadingBar = game.add.image(game.width/2, game.height/2, 'loading');
-	loadingBar.anchor.setTo(0.5, 0.5);
-	game.load.setPreloadSprite(loadingBar, 0);
+	// let key = 'loading'; 
+	// let data = new Image();
+	// data.src = 'img/progressBarRunner.png';
+	// game.cache.addImage(key, 'img/progressBarRunner.png', data);
+	// let loadingBar = game.add.image(game.width/2, game.height/2, 'loading');
+	// loadingBar.anchor.setTo(0.5, 0.5);
+	// game.load.setPreloadSprite(loadingBar, 0);
+	let loadingText = game.add.text(game.width/2, game.height/2, 'Loading...', { fill: '#ffffff' });
+	loadingText.anchor.setTo(0.5, 0.5);
+
+    game.load.onLoadStart.add(function loadStart() {
+	    loadingText.setText("Loading...");
+	}, this);
+
+    game.load.onFileComplete.add(function fileComplete(progress, cacheKey, success, totalLoaded, totalFiles) {
+	    loadingText.setText("File Complete: " + progress + "% - " + totalLoaded + " out of " + totalFiles);
+	}, this);
+
+    game.load.onLoadComplete.add(function loadComplete() {
+    	loadingText.setText("Loading Completed.");
+	}, this);
 
 	game.load.image('sky', 'img/bgMain.png');
 	game.load.image('ground2', 'img/ground2.png');
@@ -547,8 +561,8 @@ function update() {
 
 }
 
-function render() {
-    game.debug.cameraInfo(game.camera, 32, 32);
-    game.debug.spriteCoords(dude, 800, 32);
-    // dude.weapon.debug(32, 3100);
-}
+// function render() {
+//     game.debug.cameraInfo(game.camera, 32, 32);
+//     game.debug.spriteCoords(dude, 800, 32);
+//     // dude.weapon.debug(32, 3100);
+// }
