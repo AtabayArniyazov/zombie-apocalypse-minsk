@@ -6,13 +6,6 @@ const game = new Phaser.Game(window.innerWidth, gameHeight, Phaser.AUTO, '', { p
 // const game = new Phaser.Game(window.innerWidth, gameHeight, Phaser.AUTO, '', { preload: preload, create: create, update: update, render: render });
 
 function preload() {
-	// let key = 'loading'; 
-	// let data = new Image();
-	// data.src = 'img/progressBarRunner.png';
-	// game.cache.addImage(key, 'img/progressBarRunner.png', data);
-	// let loadingBar = game.add.image(game.width/2, game.height/2, 'loading');
-	// loadingBar.anchor.setTo(0.5, 0.5);
-	// game.load.setPreloadSprite(loadingBar, 0);
 	let loadingText = game.add.text(game.width/2, game.height/2, 'Loading...', { fill: '#ffffff' });
 	loadingText.anchor.setTo(0.5, 0.5);
 
